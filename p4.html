@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>منتجات الزبون</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: 40px auto; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+      background-color: #ffedf4;
+    }
+    .product {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      transition: box-shadow 0.2s;
+    }
+    .product:hover { box-shadow: 0 2px 8px #aaa; }
+    .product-media { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 12px; }
+    .price { font-size: 18px; color: #1a8917; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>منتجات الزبون</h1>
+    <div id="grid" class="grid"></div>
+  </div>
+  <script>
+    // نفس قاعدة البيانات المستخدمة في صفحة الإضافة
+    let db;
+    let products = [];
+    const dbName = 'productsDB';
+    const storeName = 'productsStore';
+    const grid = document.getElementById('grid');
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = function(e) {
+          db = e.target.result;
+          if (!db.objectStoreNames.contains(storeName)) {
+            db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        request.onsuccess = function(e) {
+          db = e.target.result;
+          resolve();
+        };
+        request.onerror = function(e) {
+          reject(e);
+        };
+      });
+    }
+
+    function getAllProducts() {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+        const request = store.getAll();
+        request.onsuccess = function(e) {
+          products = e.target.result;
+          resolve(products);
+        };
+        request.onerror = function(e) {
+          reject(e);
+        };
+      });
+    }
+
+    function renderProducts() {
+      grid.innerHTML = '';
+      products.forEach((product, idx) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.onclick = function() { openProductDesc(idx); };
+        if(product.type === 'image') {
+          div.innerHTML = `<img src="${product.src}" class="product-media" /><div class="price">${product.price} د.ع</div>`;
+        } else if(product.type === 'video') {
+          div.innerHTML = `<video src="${product.src}" class="product-media" controls></video><div class="price">${product.price} د.ع</div>`;
+        }
+        grid.appendChild(div);
+      });
+    }
+
+    function openProductDesc(idx) {
+      const product = products[idx];
+      document.body.innerHTML = `
+        <div style='padding:40px;max-width:600px;margin:auto;text-align:center;'>
+          <button onclick='location.reload()' style='margin-bottom:20px;padding:10px 30px;'>رجوع</button>
+          <h2>وصف المنتج</h2>
+          ${product.type === 'image' ? `<img src='${product.src}' style='width:350px;height:350px;object-fit:cover;border:1px solid #ccc;margin-bottom:20px;' />` : `<video src='${product.src}' controls style='width:350px;height:350px;border:1px solid #ccc;margin-bottom:20px;'></video>`}
+          <div style='font-size:22px;color:#1a8917;margin-bottom:20px;'>السعر: ${product.price} د.ع</div>
+        </div>
+      `;
+    }
+
+    openDB().then(() => {
+      getAllProducts().then(() => {
+        renderProducts();
+      });
+    });
+  </script>
+</body>
+</html>
