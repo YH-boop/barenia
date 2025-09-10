@@ -110,10 +110,14 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://i.ibb.co/8gLS17SV/photo-1570475735025-6cd1cd5c779d.jpg');
-            background-size: cover;
+            background: linear-gradient(180deg, #f5e9f8 0%, #e9f0f9 100%);
             background-repeat: no-repeat;
             background-position: center;
             min-height: 100vh;
@@ -140,7 +144,7 @@
         </style>
 </head>
 <body>
-    <a href="https://www.jotform.com/app/251700640559455" class="visit-button" target="_blank" >زيارة بارينيا</a>
+    <a href="https://barenia.netlify.app/index-b.html" class="visit-button" target="_blank" >زيارة بارينيا</a>
     <h1 class="page-title">منتجات متجر كوشة وكركوشة</h1>
     <div id="products-container"></div>
     <div style="text-align: center; margin-top: 30px;">
@@ -152,7 +156,7 @@
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <div id="modal-body"></div>
             <button class="order-btn" onclick="openOrderModal()">طلب المنتج</button>
-            <button onclick="closeModal()" class="btn" style="background:#ffb6c1; margin-top:10px;">رجوع</button>
+           <button onclick="closeModal()"style="margin-top: 10px; padding: 30px; color: #ffffff; background-color:red; border-top-right-radius:20px; border-bottom-left-radius:20px; " >رجوع</button>
     </div>
 
     <div id="orderModal" class="modal">
